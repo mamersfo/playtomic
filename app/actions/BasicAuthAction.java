@@ -68,9 +68,4 @@ public class BasicAuthAction extends Action<BasicAuth>
             throw new AppException( "Error calculating MD5 hash", e );
         }
     }
-    
-    public static void main( String[] args )
-    {
-        System.out.println( toMd5( "hallohallo" ) );
-    }
 }
