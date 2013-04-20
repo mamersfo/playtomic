@@ -1,31 +1,34 @@
+# Playtomic
+
 This is just an experiment. But in order to get this thing working, do:
 
-* Download and install [Datomic Free](http://downloads.datomic.com/free.html), <code>cd</code> into the installation dir and run:
+Download and install [Datomic Free](http://downloads.datomic.com/free.html), <code>cd</code> into the installation dir and run:
 
-		bin/transactor config/samples/free-transactor-template.properties
+    bin/transactor config/samples/free-transactor-template.properties
 		
-* Run the <code>main</code> function in <code>models.Repository</code> (this will create the <code>playtomic</code> database and loads the schema and data).
-* Download and install [Play Framework](http://www.playframework.com/download), follow the installation instructions and from the <code>playtomic</code> directory, do:
+Run the <code>main</code> function in <code>models.Repository</code> (this will create the <code>playtomic</code> database and loads the schema and data).
 
-		play run
-		
-* Point your browser or HTTP client to:
+Download and install [Play Framework](http://www.playframework.com/download), follow the installation instructions and from the <code>playtomic</code> directory, do:
 
-		http://localhost:9000/user/list
+    play run
 		
-	Using the following credentials:
+Point your browser or HTTP client to:
+
+    http://localhost:9000/user/list
+		
+Using the following credentials:
 	
-		admin/admin
+    admin/admin
 		
-	If all goes well you will see something like the following:
+If all goes well you will see something like the following:
 	
-		[
-		  {
-		    "id" : 17592186045418,
-		    "middlename" : null,
-		    "firstname" : null,
-		    "lastname" : null,
-		    "username" : "admin",
-		    "email" : null
-		  }
-		]
+    [
+     {
+      "id" : 17592186045418,
+      "middlename" : null,
+      "firstname" : null,
+      "lastname" : null,
+      "username" : "admin",
+      "email" : null
+      }
+    ]
