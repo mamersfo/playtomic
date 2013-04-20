@@ -1,6 +1,6 @@
 package models;
 
-import static datomic.Connection.TX_DATA;
+import static datomic.Connection.TEMPIDS;
 
 import java.io.File;
 import java.io.FileReader;
@@ -18,7 +18,6 @@ import play.mvc.Http.Context;
 import util.AppException;
 import datomic.Connection;
 import datomic.Database;
-import datomic.Datom;
 import datomic.Entity;
 import datomic.Peer;
 import datomic.Util;
@@ -120,15 +119,13 @@ public class Repository
         return map;
     }
     
-    public static void create( Map<String,Object> userdata )
+    @SuppressWarnings("rawtypes")
+    public static Entity create( Map<String,Object> userdata )
     {
-        userdata.put( ":db/id", Peer.tempid( "db.part/user" ) );
-        Collection<Datom> result = transact( Util.list( userdata, metadata() ) );
-        
-        for ( Datom next : result )
-        {
-            System.out.println( "e: " + next.e() + ", a: " + next.a() + ", v: " + next.v() + ", tx: " + next.tx() );
-        }
+        Object tempid = Peer.tempid( "db.part/user" );
+        userdata.put( ":db/id", tempid );
+        Map result = transact( Util.list( userdata, metadata() ) );
+        return db().entity( Peer.resolveTempid( db(), result.get( TEMPIDS ), tempid ) );
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -144,6 +141,8 @@ public class Repository
             {
                 Object oldValue = entity.get( key );
                 Object newValue = userdata.get( key );
+                
+                System.out.println( "key: " + key + " oldValue: " + oldValue + " newValue: " + newValue );
                 
                 if ( ! ( oldValue == null && newValue == null ) )
                 {
@@ -199,20 +198,12 @@ public class Repository
         return history;
     }
     
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    private static Collection<Datom> transact( List list )
+    @SuppressWarnings({ "rawtypes" })
+    private static Map transact( List list )
     {
         try
         {
-            Collection<Datom> result = 
-                (Collection<Datom>)conn().transact( list ).get().get( TX_DATA );
-            
-            if ( result.size() == 0 )
-            {
-                throw new AppException( "No datoms were added or retracted" ); 
-            }
-            
-            return result;
+            return conn().transact( list ).get();
         }
         catch( ExecutionException e )
         {

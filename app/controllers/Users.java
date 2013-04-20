@@ -1,9 +1,7 @@
 package controllers;                                                                                                                                     
                                                                                                                                                         import static models.Repository.create;
 import static models.Repository.db;
-import static models.Repository.delete;
 import static models.Repository.entities;
-import static models.Repository.identify;
 import static models.Repository.update;
 
 import java.util.HashMap;
@@ -26,9 +24,6 @@ import datomic.Entity;
 @BasicAuth
 public class Users extends Controller
 {
-    /*
-     * curl -i -X POST -H 'Content-Type: application/json' -d '{ ":user/username": "vito" }' http://localhost:9000/user/
-     */
     public static Result createUser()
     {
         try
@@ -48,9 +43,8 @@ public class Users extends Controller
             Map<String,Object> map = new HashMap<String,Object>();
             map.put( User.USERNAME_KEY, node.get( User.USERNAME_KEY ).getTextValue() );
             map.put( User.PASSWORD_KEY, BasicAuthAction.toMd5( node.get( User.PASSWORD_KEY ).getTextValue() ) );
-            create( map );
             
-            return created();
+            return created( Json.toJson( new User( create( map ) ) ) );
         }
         catch( Exception e )
         {
@@ -59,17 +53,13 @@ public class Users extends Controller
         }
     }
     
-    /*
-     * curl -i -X PUT -H 'Content-Type: application/json' -d '{"firstname":"Martin"}' http://localhost:9000/user/mamersfo
-     */
-    public static Result updateUser( String username )
+    public static Result updateUser( Long id )
     {
-        Long id = identify( "[:find ?p :in $ ?n :where [?p :username ?n]]", db(), username );
+        Entity entity = db().entity( id );
         
-        if ( id != -1L )
+        if ( entity != null )
         {
             User user = new User( request().body().asJson() );
-            user.username = username;
             update( id, user.asMap() );            
             return noContent();
         }
@@ -77,25 +67,6 @@ public class Users extends Controller
         return notFound();
     }
 
-    /*
-     * curl -i -X DELETE http://localhost:9000/user/mamersfo
-     */
-    public static Result deleteUser( String username )
-    {
-        Long id = identify( "[:find ?p :in $ ?n :where [?p :username ?n]]", db(), username );
-        
-        if ( id != -1L )
-        {
-            delete( id );            
-            return noContent();
-        }
-        
-        return notFound();
-    }    
-    
-    /*
-     * curl -i -X GET http://localhost:9000/users/
-     */
     public static Result list() 
     {   
         List<User> users = new LinkedList<User>();
@@ -111,7 +82,7 @@ public class Users extends Controller
     public static Result history()
     {
         return ok( Json.toJson( Repository.history( ":username" ) ) );
-    }
+    }    
     
     public static Result entity( Long id )
     {
@@ -124,4 +95,15 @@ public class Users extends Controller
         
         return notFound();
     }
+
+    public static Result delete( Long id )
+    {
+        if ( id != -1L )
+        {
+            delete( id );            
+            return noContent();
+        }
+        
+        return notFound();
+    }    
 }

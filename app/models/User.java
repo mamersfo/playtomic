@@ -83,11 +83,11 @@ public class User
     {
         Map<String,Object> result = new HashMap<String,Object>();
         
-        result.put( USERNAME_KEY, username );
-        result.put( FIRSTNAME_KEY, firstname );
-        result.put( MIDDLENAME_KEY, middlename );
-        result.put( LASTNAME_KEY, lastname );
-        result.put( EMAIL_KEY, email );
+        if ( username != null ) result.put( USERNAME_KEY, username );
+        if ( firstname != null ) result.put( FIRSTNAME_KEY, firstname );
+        if ( middlename != null ) result.put( MIDDLENAME_KEY, middlename );
+        if ( lastname != null ) result.put( LASTNAME_KEY, lastname );
+        if ( email != null ) result.put( EMAIL_KEY, email );
         
         return result;
     }
