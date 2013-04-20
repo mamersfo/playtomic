@@ -1,0 +1,51 @@
+[
+ {:db/id #db/id [:db.part/db]
+  :db/ident :user
+  :db/valueType :db.type/ref
+  :db/cardinality :db.cardinality/one
+  :db/doc "The user associated with the transaction"
+  :db.install/_attribute :db.part/db}
+
+ {:db/id #db/id [:db.part/db]
+  :db/ident :username
+  :db/valueType :db.type/string
+  :db/cardinality :db.cardinality/one
+  :db/unique :db.unique/value
+  :db/doc "A User's username"
+  :db.install/_attribute :db.part/db}
+
+  {:db/id #db/id [:db.part/db]
+  :db/ident :password
+  :db/valueType :db.type/string
+  :db/cardinality :db.cardinality/one
+  :db/doc "A User's password"
+  :db.install/_attribute :db.part/db}
+
+  {:db/id #db/id [:db.part/db]
+  :db/ident :firstname
+  :db/valueType :db.type/string
+  :db/cardinality :db.cardinality/one
+  :db/doc "A User's first name"
+  :db.install/_attribute :db.part/db}
+  
+  {:db/id #db/id [:db.part/db]
+  :db/ident :middlename
+  :db/valueType :db.type/string
+  :db/cardinality :db.cardinality/one
+  :db/doc "A User's middle name"
+  :db.install/_attribute :db.part/db}
+
+  {:db/id #db/id [:db.part/db]
+  :db/ident :lastname
+  :db/valueType :db.type/string
+  :db/cardinality :db.cardinality/one
+  :db/doc "A User's last name"
+  :db.install/_attribute :db.part/db}
+
+  {:db/id #db/id [:db.part/db]
+  :db/ident :email
+  :db/valueType :db.type/string
+  :db/cardinality :db.cardinality/one
+  :db/doc "A User's email address"
+  :db.install/_attribute :db.part/db}
+]

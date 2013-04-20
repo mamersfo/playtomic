@@ -1,0 +1,4 @@
+[
+    {:db/id #db/id[:db.part/user -1000001], :username "mamersfo", :password "3949f67d97c86ccd1765fe8e2fe0952e"}
+    {:db/id #db/id[:db.part/user -1000002], :username "ycwieringa", :password "ecfcb09d14771e375f4a7ed2aa6b25c5"}
+]
