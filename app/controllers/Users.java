@@ -1,8 +1,7 @@
 package controllers;                                                                                                                                     
-                                                                                                                                                        import static models.Repository.create;
-import static models.Repository.db;
-import static models.Repository.entities;
-import static models.Repository.update;
+                          
+import static models.Keys.*;                                                                                                                               import static models.Repository.createEntity;
+import static models.Repository.*;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -24,49 +23,6 @@ import datomic.Entity;
 @BasicAuth
 public class Users extends Controller
 {
-    public static Result createUser()
-    {
-        try
-        {
-            JsonNode node = request().body().asJson();
-            
-            if ( node.get( User.USERNAME_KEY ) == null )
-            {
-                return badRequest( "Expected username" );
-            }
-            
-            if ( node.get( User.PASSWORD_KEY ) == null )
-            {
-                return badRequest( "Expected password" );
-            }
-
-            Map<String,Object> map = new HashMap<String,Object>();
-            map.put( User.USERNAME_KEY, node.get( User.USERNAME_KEY ).getTextValue() );
-            map.put( User.PASSWORD_KEY, BasicAuthAction.toMd5( node.get( User.PASSWORD_KEY ).getTextValue() ) );
-            
-            return created( Json.toJson( new User( create( map ) ) ) );
-        }
-        catch( Exception e )
-        {
-            e.printStackTrace();
-            return badRequest( e.getMessage() );
-        }
-    }
-    
-    public static Result updateUser( Long id )
-    {
-        Entity entity = db().entity( id );
-        
-        if ( entity != null )
-        {
-            User user = new User( request().body().asJson() );
-            update( id, user.asMap() );            
-            return noContent();
-        }
-        
-        return notFound();
-    }
-
     public static Result list() 
     {   
         List<User> users = new LinkedList<User>();
@@ -82,15 +38,58 @@ public class Users extends Controller
     public static Result history()
     {
         return ok( Json.toJson( Repository.history( ":username" ) ) );
-    }    
-    
-    public static Result entity( Long id )
+    }
+
+    public static Result find( Long id )
     {
         Entity entity = db().entity( id );
         
         if ( entity != null )
         {
             return ok( Json.toJson( new User( entity ) ) );
+        }
+        
+        return notFound();
+    }
+
+    public static Result create()
+    {
+        try
+        {
+            JsonNode node = request().body().asJson();
+            
+            if ( node.get( USERNAME ) == null )
+            {
+                return badRequest( "Expected username" );
+            }
+            
+            if ( node.get( PASSWORD ) == null )
+            {
+                return badRequest( "Expected password" );
+            }
+
+            Map<String,Object> map = new HashMap<String,Object>();
+            map.put( USERNAME, node.get( USERNAME ).getTextValue() );
+            map.put( PASSWORD, BasicAuthAction.toMd5( node.get( PASSWORD ).getTextValue() ) );
+            
+            return created( Json.toJson( new User( createEntity( map ) ) ) );
+        }
+        catch( Exception e )
+        {
+            e.printStackTrace();
+            return badRequest( e.getMessage() );
+        }
+    }
+    
+    public static Result update( Long id )
+    {
+        Entity entity = db().entity( id );
+        
+        if ( entity != null )
+        {
+            User user = new User( request().body().asJson() );
+            updateEntity( id, user.asMap() );            
+            return noContent();
         }
         
         return notFound();

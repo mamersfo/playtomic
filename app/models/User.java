@@ -1,93 +1,92 @@
 package models;
 
+import static models.Keys.EMAIL;
+import static models.Keys.FIRSTNAME;
+import static models.Keys.ID;
+import static models.Keys.LASTNAME;
+import static models.Keys.MIDDLENAME;
+import static models.Keys.ROLES;
+import static models.Keys.USERNAME;
+
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.codehaus.jackson.JsonNode;
 
+import util.AppException;
+import util.Function;
+import util.JsonUtil;
+import util.ListUtil;
 import datomic.Entity;
 
 public class User
 {
-    public static final String USERNAME_KEY = "username";
-    public static final String PASSWORD_KEY = "password";
-    public static final String FIRSTNAME_KEY = "firstname";
-    public static final String MIDDLENAME_KEY = "middlename";
-    public static final String LASTNAME_KEY = "lastname";
-    public static final String EMAIL_KEY = "email";
-    
     public static final Pattern EMAIL_REGEX = Pattern.compile( "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$" );
     
-    public Long     id;
-    public String   username;
-    public String   firstname;
-    public String   middlename;
-    public String   lastname;
-    public String   email;
+    public Long         id;
+    public String       username;
+    public String       firstname;
+    public String       middlename;
+    public String       lastname;
+    public String       email;
+    public List<Role>   roles;
     
     public User( JsonNode json )
     {
-        String temp = null;
+        this.username = JsonUtil.getTextValue( json, USERNAME );
+        this.firstname = JsonUtil.getTextValue( json, FIRSTNAME );
+        this.middlename = JsonUtil.getTextValue( json, MIDDLENAME );
+        this.lastname = JsonUtil.getTextValue( json, LASTNAME );
         
-        if ( json.get( USERNAME_KEY ) != null )
+        String temp = JsonUtil.getTextValue( json, EMAIL );
+                
+        if ( EMAIL_REGEX.matcher( temp ).matches() )
         {
-            temp = json.get( USERNAME_KEY ).getTextValue();
-            this.username = temp;
+            this.email = temp;
         }
-        
-        if ( json.get( FIRSTNAME_KEY ) != null )
+        else
         {
-            temp = json.get( FIRSTNAME_KEY ).getTextValue();
-            this.firstname = temp;
-        }
-
-        if ( json.get( MIDDLENAME_KEY ) != null )
-        {
-            temp = json.get( MIDDLENAME_KEY ).getTextValue();
-            this.middlename = temp;
+            throw new AppException( "Illegal email address: " + temp );
         }
         
-        if ( json.get( LASTNAME_KEY ) != null )
-        {
-            temp = json.get( LASTNAME_KEY ).getTextValue();
-            this.lastname = temp;
-        }
-        
-        if ( json.get( EMAIL_KEY ) != null )
-        {
-            temp = json.get( EMAIL_KEY ).getTextValue();
-            
-            if ( EMAIL_REGEX.matcher( temp ).matches() )
-            {
-                this.email = temp;
-            }
-            else
-            {
-                System.out.println( "no match" );
-            }
-        }
+        this.roles = ListUtil.map( json.get( ROLES ).iterator(), new Function<JsonNode,Role>() {
+           public Role apply( JsonNode node ) {
+               return new Role( Repository.db().entity( node.get( ID ).getLongValue() ) );
+           }
+        });
     }
     
+    @SuppressWarnings("unchecked")
     public User( Entity entity )
     {
         this.id = (Long)entity.get( "db/id" );
-        this.username = (String)entity.get( USERNAME_KEY );
-        this.firstname = (String)entity.get( FIRSTNAME_KEY );
-        this.middlename = (String)entity.get( MIDDLENAME_KEY );
-        this.lastname = (String)entity.get( LASTNAME_KEY );
-        this.email = (String)entity.get( EMAIL_KEY );
+        this.username = (String)entity.get( USERNAME );
+        this.firstname = (String)entity.get( FIRSTNAME );
+        this.middlename = (String)entity.get( MIDDLENAME );
+        this.lastname = (String)entity.get( LASTNAME );
+        this.email = (String)entity.get( EMAIL );
+        
+        this.roles = ListUtil.map( (Set<Entity>)entity.get( ROLES ), new Function<Entity,Role>() {
+           public Role apply( Entity e ) { return new Role( e ); } 
+        });
     }
     
     public Map<String,Object> asMap()
     {
         Map<String,Object> result = new HashMap<String,Object>();
         
-        if ( username != null ) result.put( USERNAME_KEY, username );
-        if ( firstname != null ) result.put( FIRSTNAME_KEY, firstname );
-        if ( middlename != null ) result.put( MIDDLENAME_KEY, middlename );
-        if ( lastname != null ) result.put( LASTNAME_KEY, lastname );
-        if ( email != null ) result.put( EMAIL_KEY, email );
+        if ( username != null ) result.put( USERNAME, username );
+        if ( firstname != null ) result.put( FIRSTNAME, firstname );
+        if ( middlename != null ) result.put( MIDDLENAME, middlename );
+        if ( lastname != null ) result.put( LASTNAME, lastname );
+        if ( email != null ) result.put( EMAIL, email );
+        
+//        result.put( ROLES, ListUtil.map( this.roles, new Function<Role,Long>() {
+//            public Long apply( Role arg ) { return arg.id; }
+//        }));
         
         return result;
     }

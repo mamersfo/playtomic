@@ -8,20 +8,20 @@ import clojure.lang.Keyword;
 public class Change
 {
     public String   type;
-    public Long     id;
-    public String   attr;
-    public Object   val;
+    public Long     e;
+    public String   a;
+    public Object   v;
+    public Date     date;
     public String   user;
-    public Date     dt;
     
     public Change( List<Object> values )
     {
-        this.id = (Long)values.get( 0 );
-        this.attr = ((Keyword)values.get( 1 )).getName();
-        this.val = values.get( 2 );
-        this.user = (String)values.get( 3 );
-        this.dt = (Date)values.get( 4 );
-        this.type = ((Boolean)values.get(5)) ? "+" : "-";
+        this.type = ((Boolean)values.get(0)) ? "+" : "-";
+        this.e = (Long)values.get( 1 );
+        this.a = ((Keyword)values.get( 2 )).getName();
+        this.v = values.get( 3 );
+        this.date = (Date)values.get( 4 );
+//        this.user = (String)values.get( 5 );
     }
     
     public static class Comparator implements java.util.Comparator<Change>
@@ -29,7 +29,7 @@ public class Change
         @Override
         public int compare( Change o1, Change o2 )
         {
-            return o1.dt.compareTo( o2.dt );
+            return o1.date.compareTo( o2.date );
         }        
     }
 }

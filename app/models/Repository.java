@@ -120,7 +120,7 @@ public class Repository
     }
     
     @SuppressWarnings("rawtypes")
-    public static Entity create( Map<String,Object> userdata )
+    public static Entity createEntity( Map<String,Object> userdata )
     {
         Object tempid = Peer.tempid( "db.part/user" );
         userdata.put( ":db/id", tempid );
@@ -129,7 +129,7 @@ public class Repository
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static void update( Long id, Map<String,Object> userdata )
+    public static void updateEntity( Long id, Map<String,Object> userdata )
     {
         List list = new ArrayList();
         
@@ -141,8 +141,6 @@ public class Repository
             {
                 Object oldValue = entity.get( key );
                 Object newValue = userdata.get( key );
-                
-                System.out.println( "key: " + key + " oldValue: " + oldValue + " newValue: " + newValue );
                 
                 if ( ! ( oldValue == null && newValue == null ) )
                 {
@@ -169,7 +167,7 @@ public class Repository
         }
     }
     
-    public static void delete( Long id )
+    public static void deleteEntity( Long id )
     {
         transact( Util.list( Util.list( ":db.fn/retractEntity", id ), metadata() ) );
     }
@@ -178,17 +176,19 @@ public class Repository
     {
         List<Change> history = new LinkedList<Change>();
         
-        final String query = "[:find ?e ?k ?v ?user ?dt ?add :in $ ?attr :where " +
+        final String query = "[:find ?add ?e ?k ?v ?dt :in $ ?attr :where " +
                              "[?e ?a ?v ?tx ?add]" +
                              "[?e ?attr _]" +
                              "[?a :db/ident ?k]" +
                              "[?tx :db/txInstant ?dt]" +
                              "[?tx :user ?u]" +
-                             "[?u :username ?user]" +
                              "]";
                                      
-            
-        for ( List<Object> list : Peer.q( query, db().history(), ":username" ) )
+        Collection<List<Object>> found = Peer.q( query, db().history(), attribute );
+        
+        System.out.println( "Found: " + found.size() );
+        
+        for ( List<Object> list : found )
         {
             history.add( new Change( list ) );
         }

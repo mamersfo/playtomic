@@ -3,7 +3,7 @@
   :db/ident :user
   :db/valueType :db.type/ref
   :db/cardinality :db.cardinality/one
-  :db/doc "The user associated with the transaction"
+  :db/doc "The User associated with the transaction"
   :db.install/_attribute :db.part/db}
 
  {:db/id #db/id [:db.part/db]
@@ -39,13 +39,44 @@
   :db/ident :lastname
   :db/valueType :db.type/string
   :db/cardinality :db.cardinality/one
-  :db/doc "A User's last name"
+  :db/doc "Last name"
   :db.install/_attribute :db.part/db}
 
   {:db/id #db/id [:db.part/db]
   :db/ident :email
   :db/valueType :db.type/string
   :db/cardinality :db.cardinality/one
-  :db/doc "A User's email address"
+  :db/doc "Email address"
   :db.install/_attribute :db.part/db}
+  
+  {:db/id #db/id [:db.part/db]
+  :db/ident :roles
+  :db/valueType :db.type/ref
+  :db/cardinality :db.cardinality/many
+  :db/doc "Roles"
+  :db.install/_attribute :db.part/db}  
+  
+ {:db/id #db/id [:db.part/db]
+  :db/ident :name
+  :db/valueType :db.type/string
+  :db/cardinality :db.cardinality/one
+  :db/doc "Name"
+  :db.install/_attribute :db.part/db}
+
+ {:db/id #db/id [:db.part/db]
+  :db/ident :description
+  :db/valueType :db.type/string
+  :db/cardinality :db.cardinality/one
+  :db/doc "Description"
+  :db.install/_attribute :db.part/db}
+
+ {:db/id #db/id [:db.part/db]
+  :db/ident :roletype
+  :db/valueType :db.type/ref
+  :db/cardinality :db.cardinality/one
+  :db/doc "Role type"
+  :db.install/_attribute :db.part/db} 
+ 
+ [:db/add #db/id[:db.part/user] :db/ident :roletype/internal]
+ [:db/add #db/id[:db.part/user] :db/ident :roletype/external]
 ]

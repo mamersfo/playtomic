@@ -1,3 +1,12 @@
 [
-    {:db/id #db/id[:db.part/user -1000001], :username "admin", :password "21232f297a57a5a743894a0e4a801fc3"}
+    {:db/id #db/id[:db.part/user -1000001]
+     :name "Administrator"
+     :description "The super user role"
+     :roletype [:roletype/internal]
+    }
+
+    {:db/id #db/id[:db.part/user -1000002] 
+     :username "admin"
+     :roles [ #db/id[:db.part/user -1000001] ]
+     :password "21232f297a57a5a743894a0e4a801fc3"}
 ]
