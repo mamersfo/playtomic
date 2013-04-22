@@ -79,4 +79,21 @@
  
  [:db/add #db/id[:db.part/user] :db/ident :roletype/internal]
  [:db/add #db/id[:db.part/user] :db/ident :roletype/external]
+
+ {:db/id #db/id [:db.part/db]
+  :db/ident :orgtype
+  :db/valueType :db.type/ref
+  :db/cardinality :db.cardinality/one
+  :db/doc "Organisation type"
+  :db.install/_attribute :db.part/db} 
+
+ [:db/add #db/id[:db.part/user] :db/ident :orgtype/default] 
+ [:db/add #db/id[:db.part/user] :db/ident :orgtype/client] 
+
+ {:db/id #db/id [:db.part/db]
+  :db/ident :parent
+  :db/valueType :db.type/ref
+  :db/cardinality :db.cardinality/one
+  :db/doc "Parent"
+  :db.install/_attribute :db.part/db} 
 ]

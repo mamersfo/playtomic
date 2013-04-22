@@ -10,8 +10,9 @@ public class Keys
     public static final String LASTNAME = "lastname";
     public static final String MIDDLENAME = "middlename";
     public static final String NAME = "name";    
+    public static final String ORGTYPE = "orgtype";        
+    public static final String PARENT = "parent";    
     public static final String PASSWORD = "password";
     public static final String ROLETYPE = "roletype";
     public static final String USERNAME = "username";
-    
 }

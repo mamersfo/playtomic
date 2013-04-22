@@ -9,7 +9,7 @@ import java.util.Map;
 
 import org.codehaus.jackson.JsonNode;
 
-import util.AppException;
+import util.JsonUtil;
 import clojure.lang.Keyword;
 import datomic.Entity;
 
@@ -20,58 +20,29 @@ public class Role
     public String  description;
     public String  roletype;
     
-    public Role( JsonNode json )
+    public Role( JsonNode node )
     {
-        String temp = null;
-        
-        if ( json.get( NAME ) != null )
-        {
-            temp = json.get( NAME ).getTextValue();
-            this.name = temp;
-        }
-        
-        if ( json.get( DESCRIPTION ) != null )
-        {
-            temp = json.get( DESCRIPTION ).getTextValue();
-            this.description = temp;
-        }
-        
-        if ( json.get( ROLETYPE ) != null )
-        {
-            temp = json.get( ROLETYPE ).getTextValue();
-            
-            Keyword keyword = Keyword.find( temp );
-            
-            if ( keyword == null )
-            {
-                throw new AppException( "Illegal keyword: " + temp );
-            }
-            
-            this.roletype = keyword.toString();
-        }
+        this.name = JsonUtil.getTextValue( node, NAME );
+        this.description = JsonUtil.getTextValue( node, DESCRIPTION );
+        this.roletype = JsonUtil.asString( JsonUtil.getKeywordValue( node, ROLETYPE ) );
     }
     
     public Role( Entity entity )
     {
         this.id = (Long)entity.get( "db/id" );
+        
         this.name = (String)entity.get( NAME );
-        this.description = (String)entity.get( DESCRIPTION );
-        
-        Keyword keyword = (Keyword)entity.get( ROLETYPE );
-        
-        if ( keyword != null )
-        {
-            this.roletype = keyword.getNamespace() + "/" + keyword.getName();
-        }
+        this.description = (String)entity.get( DESCRIPTION );        
+        this.roletype = JsonUtil.asString( (Keyword)entity.get( ROLETYPE ) );
     }
 
     public Map<String,Object> asMap()
     {
         Map<String,Object> result = new HashMap<String,Object>();
         
-        if ( name != null ) result.put( NAME, name );
-        if ( description != null ) result.put( DESCRIPTION, description );
-        if ( roletype != null ) result.put( ROLETYPE, roletype );
+        if ( this.name != null ) result.put( NAME, this.name );
+        if ( this.description != null ) result.put( DESCRIPTION, this.description );        
+        if ( this.roletype != null ) result.put( ROLETYPE, Keyword.find( this.roletype ) );
 
         return result;
     }

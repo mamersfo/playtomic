@@ -37,7 +37,7 @@ public class Repository
         Peer.createDatabase( uri );
 
         load( new File( "conf/schema.edn" ) );
-        load( new File( "data/users.edn" ) );
+        load( new File( "data/data.edn" ) );
     }
     
     private static Connection CONN = null;
@@ -127,6 +127,17 @@ public class Repository
     {
         Object tempid = Peer.tempid( "db.part/user" );
         userdata.put( ":db/id", tempid );
+        
+        for ( String key : userdata.keySet() )
+        {
+            Object value = userdata.get( key );
+            
+            if ( value instanceof Entity )
+            {
+                userdata.put( key, ((Entity)value).get( "db/id" ) );
+            }
+        }
+        
         Map result = transact( Util.list( userdata, metadata() ) );
         return db().entity( Peer.resolveTempid( db(), result.get( TEMPIDS ), tempid ) );
     }
@@ -165,13 +176,15 @@ public class Repository
                         }                        
                     }
                     else
-                    {
+                    {                        
                         if ( newValue != null )
                         {
+                            if ( newValue instanceof Entity ) newValue = ((Entity)newValue).get( "db/id" );
                             list.add( Util.list( ":db/add", id, key, newValue ) );
                         }
                         else
                         {
+                            if ( oldValue instanceof Entity ) oldValue = ((Entity)oldValue).get( "db/id" );
                             list.add( Util.list( ":db/retract", id, key, oldValue ) );
                         }
                     }
