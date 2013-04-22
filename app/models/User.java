@@ -1,14 +1,17 @@
 package models;
 
+import static models.Keys.DB_ID;
 import static models.Keys.EMAIL;
 import static models.Keys.FIRSTNAME;
 import static models.Keys.ID;
 import static models.Keys.LASTNAME;
 import static models.Keys.MIDDLENAME;
+import static models.Keys.ORGANIZATION;
 import static models.Keys.ROLES;
 import static models.Keys.USERNAME;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -31,6 +34,7 @@ public class User
     public String       middlename;
     public String       lastname;
     public String       email;
+    public Organization organization;
     public Set<Role>    roles;
     
     public User( JsonNode json )
@@ -54,22 +58,36 @@ public class User
             }
         }
         
-        this.roles = SetUtil.map( json.get( ROLES ).iterator(), new Function<JsonNode,Role>() {
-           public Role apply( JsonNode node ) {
-               return new Role( Repository.db().entity( node.get( ID ).getLongValue() ) );
-           }
-        });
+        if ( json.get( ORGANIZATION ) != null )
+        {
+            Entity entity = JsonUtil.getEntityValue( json.get( ORGANIZATION ), ID );
+            if ( entity != null ) this.organization = new Organization( entity );
+        }
+        
+        Iterator<JsonNode> roles = JsonUtil.getArrayValue( json, ROLES );
+        
+        if ( roles != null )
+        {
+            this.roles = SetUtil.map( roles, new Function<JsonNode,Role>() {
+               public Role apply( JsonNode node ) {
+                   return new Role( Repository.db().entity( node.get( ID ).getLongValue() ) );
+               }
+            });
+        }
     }
     
     @SuppressWarnings("unchecked")
     public User( Entity entity )
     {
-        this.id = (Long)entity.get( "db/id" );
+        this.id = (Long)entity.get( DB_ID );
         this.username = (String)entity.get( USERNAME );
         this.firstname = (String)entity.get( FIRSTNAME );
         this.middlename = (String)entity.get( MIDDLENAME );
         this.lastname = (String)entity.get( LASTNAME );
         this.email = (String)entity.get( EMAIL );
+
+        Entity e = (Entity)entity.get( ORGANIZATION );
+        if ( e != null ) this.organization = new Organization( e );
         
         this.roles = SetUtil.map( (Set<Entity>)entity.get( ROLES ), new Function<Entity,Role>() {
            public Role apply( Entity e ) { return new Role( e ); } 
@@ -86,9 +104,17 @@ public class User
         if ( lastname != null ) result.put( LASTNAME, lastname );
         if ( email != null ) result.put( EMAIL, email );
         
-        result.put( ROLES, SetUtil.map( this.roles, new Function<Role,Entity>() {
-            public Entity apply( Role role ) { return Repository.db().entity( role.id ); }
-        }));
+        if ( this.organization != null )
+        {
+            result.put( ORGANIZATION, Repository.db().entity( this.organization.id ) );
+        }
+        
+        if ( this.roles != null )
+        {
+            result.put( ROLES, SetUtil.map( this.roles, new Function<Role,Entity>() {
+                public Entity apply( Role role ) { return Repository.db().entity( role.id ); }
+            }));
+        }
         
         return result;
     }

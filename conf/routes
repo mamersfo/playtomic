@@ -2,21 +2,21 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET     /user/list                  controllers.Users.list()
+GET     /user/                      controllers.Users.list()
 GET     /user/history               controllers.Users.history()
 GET     /user/:id                   controllers.Users.find(id: Long)
 POST    /user/                      controllers.Users.create()
 PUT     /user/:id                   controllers.Users.update(id: Long)
 DELETE  /user/:id                   controllers.Users.delete(id: Long)
 
-GET     /role/list                  controllers.Roles.list()
+GET     /role/                      controllers.Roles.list()
 GET     /role/history               controllers.Roles.history()
 GET     /role/:id                   controllers.Roles.find(id: Long)
 POST    /role/                      controllers.Roles.create()
 PUT     /role/:id                   controllers.Roles.update(id: Long)
 DELETE  /role/:id                   controllers.Roles.delete(id: Long)
 
-GET     /organization/list          controllers.Organizations.list()
+GET     /organization/              controllers.Organizations.list()
 GET     /organization/history       controllers.Organizations.history()
 GET     /organization/:id           controllers.Organizations.find(id: Long)
 POST    /organization/              controllers.Organizations.create()

@@ -8,7 +8,8 @@ public class SetUtil
 {
     public static <I,O> Set<O> map( Iterable <I> iterable, Function<I,O> fun )
     {
-        return map( iterable.iterator(), fun );
+        if ( iterable != null ) return map( iterable.iterator(), fun );
+        return new HashSet<O>();
     }
     
     public static <I,O> Set<O> map( Iterator <I> iterator, Function<I,O> fun )

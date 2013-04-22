@@ -2,6 +2,7 @@ package models;
 
 public class Keys
 {
+    public static final String DB_ID = "db/id";
     public static final String DESCRIPTION = "description";
     public static final String EMAIL = "email";
     public static final String FIRSTNAME = "firstname";
@@ -10,6 +11,7 @@ public class Keys
     public static final String LASTNAME = "lastname";
     public static final String MIDDLENAME = "middlename";
     public static final String NAME = "name";    
+    public static final String ORGANIZATION = "organization";        
     public static final String ORGTYPE = "orgtype";        
     public static final String PARENT = "parent";    
     public static final String PASSWORD = "password";

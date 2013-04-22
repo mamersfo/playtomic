@@ -19,4 +19,12 @@
      :description "The subsidiary"
      :orgtype [:orgtype/client]
      :parent [#db/id[:db.part/user -1000003]]}
+    
+    ;; Credentials: johndoe/secret
+    
+    {:db/id #db/id[:db.part/user -1000005] 
+     :username "johndoe"
+     :roles [#db/id[:db.part/user -1000001]]
+     :organization [#db/id[:db.part/user -1000004]]
+     :password "5ebe2294ecd0e0f08eab7690d2a6ee69"}    
 ]

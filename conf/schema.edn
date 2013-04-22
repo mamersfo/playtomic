@@ -3,7 +3,7 @@
   :db/ident :user
   :db/valueType :db.type/ref
   :db/cardinality :db.cardinality/one
-  :db/doc "The User associated with the transaction"
+  :db/doc "User"
   :db.install/_attribute :db.part/db}
 
  {:db/id #db/id [:db.part/db]
@@ -11,28 +11,28 @@
   :db/valueType :db.type/string
   :db/cardinality :db.cardinality/one
   :db/unique :db.unique/value
-  :db/doc "A User's username"
+  :db/doc "Username"
   :db.install/_attribute :db.part/db}
 
   {:db/id #db/id [:db.part/db]
   :db/ident :password
   :db/valueType :db.type/string
   :db/cardinality :db.cardinality/one
-  :db/doc "A User's password"
+  :db/doc "Password"
   :db.install/_attribute :db.part/db}
 
   {:db/id #db/id [:db.part/db]
   :db/ident :firstname
   :db/valueType :db.type/string
   :db/cardinality :db.cardinality/one
-  :db/doc "A User's first name"
+  :db/doc "First name"
   :db.install/_attribute :db.part/db}
   
   {:db/id #db/id [:db.part/db]
   :db/ident :middlename
   :db/valueType :db.type/string
   :db/cardinality :db.cardinality/one
-  :db/doc "A User's middle name"
+  :db/doc "Middle name"
   :db.install/_attribute :db.part/db}
 
   {:db/id #db/id [:db.part/db]
@@ -40,6 +40,13 @@
   :db/valueType :db.type/string
   :db/cardinality :db.cardinality/one
   :db/doc "Last name"
+  :db.install/_attribute :db.part/db}
+
+  {:db/id #db/id [:db.part/db]
+  :db/ident :organization
+  :db/valueType :db.type/ref
+  :db/cardinality :db.cardinality/one
+  :db/doc "Organization"
   :db.install/_attribute :db.part/db}
 
   {:db/id #db/id [:db.part/db]

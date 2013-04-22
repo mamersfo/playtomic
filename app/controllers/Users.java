@@ -17,7 +17,6 @@ import models.User;
 
 import org.codehaus.jackson.JsonNode;
 
-import play.Logger;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -30,8 +29,6 @@ public class Users extends Controller
 {
     public static Result list() 
     {   
-        Logger.info( "list()" );
-        
         List<User> users = new LinkedList<User>();
         
         for ( Entity entity : entities( "[:find ?p :in $ :where [?p :username]]", db() ) )

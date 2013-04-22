@@ -1,8 +1,6 @@
 package util;
 
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 import models.Repository;
 
@@ -18,16 +16,6 @@ public class JsonUtil
         if ( node.get( key ) != null )
         {
             return Repository.db().entity( node.get( key ).getLongValue() );
-        }
-        
-        return null;
-    }
-    
-    public static String asString( Keyword keyword )
-    {
-        if ( keyword != null )
-        {
-            return keyword.getNamespace() + "/" + keyword.getName();
         }
         
         return null;
@@ -62,20 +50,22 @@ public class JsonUtil
         return null;
     }
     
-    public static List<JsonNode> elements( JsonNode node )
+    public static Iterator<JsonNode> getArrayValue( JsonNode node, String key )
     {
-        List<JsonNode> result = new LinkedList<JsonNode>();
+        JsonNode value = node.get( key );
         
-        if ( node.isArray() )
+        if ( value != null )
         {
-            Iterator<JsonNode> iterator = node.iterator();
-            
-            while ( iterator.hasNext() )
+            if ( value.isArray() )
             {
-                result.add( iterator.next() );
+                return value.iterator();
+            }
+            else
+            {
+                throw new AppException( "Expected array for key: '" + key + "'" );                
             }
         }
         
-        return result;
+        return null;
     }
 }
