@@ -16,9 +16,8 @@ import models.Repository;
 import models.User;
 
 import org.codehaus.jackson.JsonNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import play.Logger;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -29,10 +28,10 @@ import datomic.Entity;
 @BasicAuth
 public class Users extends Controller
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger( Users.class );
-    
     public static Result list() 
     {   
+        Logger.info( "list()" );
+        
         List<User> users = new LinkedList<User>();
         
         for ( Entity entity : entities( "[:find ?p :in $ :where [?p :username]]", db() ) )

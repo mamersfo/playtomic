@@ -15,9 +15,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import play.Logger;
 import play.mvc.Http.Context;
 import util.AppException;
 import util.ToMany;
@@ -29,8 +27,6 @@ import datomic.Util;
 
 public class Repository
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger( Repository.class );
-    
     private static final String uri = "datomic:free://localhost:4334/playtomic";
     
     public static void main( String[] args )
@@ -149,7 +145,7 @@ public class Repository
                 Object oldValue = entity.get( key );
                 Object newValue = userdata.get( key );
                 
-                LOGGER.info(
+                Logger.info(
                         "key: " + key + ", " +
                         "old: " + oldValue + ( oldValue != null ? " (" + oldValue.getClass() + ") " : " " ) +
                         "new: " + newValue + ( newValue != null ? " (" + newValue.getClass() + ") " : " " ) );                        
@@ -190,9 +186,6 @@ public class Repository
         if ( list.size() > 0 )
         {
             list.add( metadata() );
-            
-            System.out.println( "Update: " + list );
-            
             transact( list );
         }
     }
@@ -215,8 +208,6 @@ public class Repository
                              "]";
                                      
         Collection<List<Object>> found = Peer.q( query, db().history(), attribute );
-        
-        System.out.println( "Found: " + found.size() );
         
         for ( List<Object> list : found )
         {
