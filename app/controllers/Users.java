@@ -1,7 +1,11 @@
 package controllers;                                                                                                                                     
                           
-import static models.Keys.*;                                                                                                                               import static models.Repository.createEntity;
-import static models.Repository.*;
+import static models.Keys.PASSWORD;
+import static models.Keys.USERNAME;
+import static models.Repository.createEntity;
+import static models.Repository.db;
+import static models.Repository.entities;
+import static models.Repository.updateEntity;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -12,6 +16,8 @@ import models.Repository;
 import models.User;
 
 import org.codehaus.jackson.JsonNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import play.libs.Json;
 import play.mvc.Controller;
@@ -23,6 +29,8 @@ import datomic.Entity;
 @BasicAuth
 public class Users extends Controller
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger( Users.class );
+    
     public static Result list() 
     {   
         List<User> users = new LinkedList<User>();

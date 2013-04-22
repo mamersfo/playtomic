@@ -9,7 +9,6 @@ import static models.Keys.ROLES;
 import static models.Keys.USERNAME;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -19,7 +18,7 @@ import org.codehaus.jackson.JsonNode;
 import util.AppException;
 import util.Function;
 import util.JsonUtil;
-import util.ListUtil;
+import util.SetUtil;
 import datomic.Entity;
 
 public class User
@@ -32,7 +31,7 @@ public class User
     public String       middlename;
     public String       lastname;
     public String       email;
-    public List<Role>   roles;
+    public Set<Role>    roles;
     
     public User( JsonNode json )
     {
@@ -42,17 +41,20 @@ public class User
         this.lastname = JsonUtil.getTextValue( json, LASTNAME );
         
         String temp = JsonUtil.getTextValue( json, EMAIL );
-                
-        if ( EMAIL_REGEX.matcher( temp ).matches() )
+             
+        if ( temp != null )
         {
-            this.email = temp;
-        }
-        else
-        {
-            throw new AppException( "Illegal email address: " + temp );
+            if ( EMAIL_REGEX.matcher( temp ).matches() )
+            {
+                this.email = temp;
+            }
+            else
+            {
+                throw new AppException( "Illegal email address: " + temp );
+            }
         }
         
-        this.roles = ListUtil.map( json.get( ROLES ).iterator(), new Function<JsonNode,Role>() {
+        this.roles = SetUtil.map( json.get( ROLES ).iterator(), new Function<JsonNode,Role>() {
            public Role apply( JsonNode node ) {
                return new Role( Repository.db().entity( node.get( ID ).getLongValue() ) );
            }
@@ -69,7 +71,7 @@ public class User
         this.lastname = (String)entity.get( LASTNAME );
         this.email = (String)entity.get( EMAIL );
         
-        this.roles = ListUtil.map( (Set<Entity>)entity.get( ROLES ), new Function<Entity,Role>() {
+        this.roles = SetUtil.map( (Set<Entity>)entity.get( ROLES ), new Function<Entity,Role>() {
            public Role apply( Entity e ) { return new Role( e ); } 
         });
     }
@@ -84,9 +86,9 @@ public class User
         if ( lastname != null ) result.put( LASTNAME, lastname );
         if ( email != null ) result.put( EMAIL, email );
         
-//        result.put( ROLES, ListUtil.map( this.roles, new Function<Role,Long>() {
-//            public Long apply( Role arg ) { return arg.id; }
-//        }));
+        result.put( ROLES, SetUtil.map( this.roles, new Function<Role,Entity>() {
+            public Entity apply( Role role ) { return Repository.db().entity( role.id ); }
+        }));
         
         return result;
     }

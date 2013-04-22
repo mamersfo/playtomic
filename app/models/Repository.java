@@ -12,10 +12,15 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import play.mvc.Http.Context;
 import util.AppException;
+import util.ToMany;
 import datomic.Connection;
 import datomic.Database;
 import datomic.Entity;
@@ -24,6 +29,8 @@ import datomic.Util;
 
 public class Repository
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger( Repository.class );
+    
     private static final String uri = "datomic:free://localhost:4334/playtomic";
     
     public static void main( String[] args )
@@ -142,15 +149,35 @@ public class Repository
                 Object oldValue = entity.get( key );
                 Object newValue = userdata.get( key );
                 
+                LOGGER.info(
+                        "key: " + key + ", " +
+                        "old: " + oldValue + ( oldValue != null ? " (" + oldValue.getClass() + ") " : " " ) +
+                        "new: " + newValue + ( newValue != null ? " (" + newValue.getClass() + ") " : " " ) );                        
+
                 if ( ! ( oldValue == null && newValue == null ) )
                 {
-                    if ( newValue != null )
+                    if ( oldValue instanceof Set || newValue instanceof Set )
                     {
-                        list.add( Util.list( ":db/add", id, key, newValue ) );
+                        for ( Object next : ToMany.additions( (Set)oldValue, (Set)newValue ) )
+                        {
+                            list.add( Util.list( ":db/add", id, key, next ) );
+                        }
+
+                        for ( Object next : ToMany.retractions( (Set)oldValue, (Set)newValue ) )
+                        {
+                            list.add( Util.list( ":db/retract", id, key, next ) );
+                        }                        
                     }
                     else
                     {
-                        list.add( Util.list( ":db/retract", id, key, oldValue ) );
+                        if ( newValue != null )
+                        {
+                            list.add( Util.list( ":db/add", id, key, newValue ) );
+                        }
+                        else
+                        {
+                            list.add( Util.list( ":db/retract", id, key, oldValue ) );
+                        }
                     }
                 }
             }
@@ -163,6 +190,9 @@ public class Repository
         if ( list.size() > 0 )
         {
             list.add( metadata() );
+            
+            System.out.println( "Update: " + list );
+            
             transact( list );
         }
     }
